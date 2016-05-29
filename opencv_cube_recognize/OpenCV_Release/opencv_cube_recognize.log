@@ -1,6 +1,12 @@
-﻿生成启动时间为 2016/5/29 17:09:36。
+﻿生成启动时间为 2016/5/29 17:41:54。
      1>项目“D:\WorkSpace\WIN\VS2013\CSharp\opencv_cube_recognize\opencv_cube_recognize\opencv_cube_recognize.vcxproj”在节点 2 上(Build 个目标)。
-     1>Link:
+     1>ClCompile:
+         X:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ID:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\include /Zi /nologo /W1 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"OpenCV_Release\\" /Fd"OpenCV_Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt cube.cpp
+         cube.cpp
+     1>D:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\include\opencv2/core/mat.hpp(1965): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\include\opencv2/core/persistence.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>D:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\include\opencv2/core/utility.hpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+       Link:
          X:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\WorkSpace\WIN\VS2013\CSharp\opencv_cube_recognize\OpenCV_Release\opencv_cube_recognize.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:D:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\x86\vc12\lib /LIBPATH:D:\WorkSpace\WIN\OpenCV\opencv\newBuild\install\x86\vc12\staticlib opencv_aruco310.lib opencv_bgsegm310.lib opencv_bioinspired310.lib opencv_calib3d310.lib opencv_ccalib310.lib opencv_core310.lib opencv_datasets310.lib opencv_dnn310.lib opencv_dpm310.lib opencv_face310.lib opencv_features2d310.lib opencv_flann310.lib opencv_fuzzy310.lib opencv_highgui310.lib opencv_imgcodecs310.lib opencv_imgproc310.lib opencv_line_descriptor310.lib opencv_ml310.lib opencv_objdetect310.lib opencv_optflow310.lib opencv_photo310.lib opencv_plot310.lib opencv_reg310.lib opencv_rgbd310.lib opencv_saliency310.lib opencv_shape310.lib opencv_stereo310.lib opencv_stitching310.lib opencv_structured_light310.lib opencv_superres310.lib opencv_surface_matching310.lib opencv_text310.lib opencv_tracking310.lib opencv_ts310.lib opencv_video310.lib opencv_videoio310.lib opencv_videostab310.lib opencv_xfeatures2d310.lib opencv_ximgproc310.lib opencv_xobjdetect310.lib opencv_xphoto310.lib ippicvmt.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\WorkSpace\WIN\VS2013\CSharp\opencv_cube_recognize\OpenCV_Release\opencv_cube_recognize.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\WorkSpace\WIN\VS2013\CSharp\opencv_cube_recognize\OpenCV_Release\opencv_cube_recognize.lib" /MACHINE:X86 /SAFESEH OpenCV_Release\alg.obj
          OpenCV_Release\cube.obj
          正在生成代码
@@ -10,4 +16,4 @@
 
 生成成功。
 
-已用时间 00:00:01.55
+已用时间 00:00:02.46

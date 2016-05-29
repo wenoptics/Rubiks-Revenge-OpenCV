@@ -6,7 +6,7 @@
 
 #define useAdaptiveThresold
 #undef useAdaptiveThresold
-
+#undef useHoughLinePAtLast
 
 using namespace cv;
 using namespace std;
@@ -170,8 +170,6 @@ void showImg(){
 
 	cvtColor(imgPolyOf4, imgPolyOf4, CV_RGB2GRAY);
 	imshow("imgPolyOf4", imgPolyOf4);
-	
-
 
 
 	//vector<c_a_pair> pairedGroup = makeContourAreaPair(contours);
@@ -181,6 +179,11 @@ void showImg(){
 
 	vector<vector<c_a_pair>> groupingGroups = sortedGrouping_continous(sortedGroup, pSortedGroupingGap);
 	printGroups(groupingGroups);
+	
+
+	// HoughLinesP on imgPolyResult
+	Mat imgLineDetec(imgCvtBin.size(), CV_8UC3);
+	
 
 	Mat imgPolyGrouping(imgCvtBin.size(), imgSource.type());
 	for each (vector<c_a_pair> oneGroup in groupingGroups)
@@ -195,6 +198,13 @@ void showImg(){
 		putText(imgPolyGrouping, std::to_string(oneGroup[0].second), oneGroup[0].first[0],
 			FONT_HERSHEY_SCRIPT_SIMPLEX, 0.5, CV_RGB(r, g, b));
 
+#ifdef useHoughLinePAtLast
+		// HoughLinesP detect from 
+		Mat imgIntentGroupLine(imgCvtBin.size(), imgSource.type());
+		cvtColor(imgIntentGroupLine, imgIntentGroupLine, CV_RGB2GRAY);
+#endif
+
+
 		// we collect all the point from this group, 
 		//		to get the minArea rect later.
 		vector<Point> groupPoints;
@@ -208,6 +218,12 @@ void showImg(){
 			//calc the area by drawing every single pieces
 			fillConvexPoly(tmpBImage, ele.first, CV_RGB(255, 255, 255));
 
+#ifdef useHoughLinePAtLast
+			// draw lines on imgIntentGroupLine, later we will use HoughLinesP to enhance it.
+			polylines(imgIntentGroupLine, ele.first, true, CV_RGB(255,255,255), 2);
+#endif
+
+			// this is for debug preview
 			fillConvexPoly(imgPolyGrouping, ele.first, CV_RGB(r, g, b));			
 
 			//polylines(imgPolyGrouping, ele.first, true, CV_RGB(r, g, b), 4);
@@ -232,33 +248,40 @@ void showImg(){
 
 		double minAreaArea = rRect.size.area();
 		int piecesTotalArea = countNonZero(tmpBImage);
+		double areaRatio = (double)piecesTotalArea / minAreaArea;
 
-		printf("area of this groupRect %.2f, area of pieces %d \n", minAreaArea, piecesTotalArea);
+		printf("area of this groupRect %.2f, area of pieces %d, ratio=%.2f \n", minAreaArea, piecesTotalArea, areaRatio);
 
 		putText(imgPolyGrouping, 
 			std::to_string((int)minAreaArea) + "/" + std::to_string(piecesTotalArea),
 			Point(pointsRect[0]),
 			FONT_HERSHEY_SCRIPT_SIMPLEX, 0.4, CV_RGB(255,255,255));
 
+		if (oneGroup.size() > 16 && areaRatio > 0.4) 
+		{
+
+#ifdef useHoughLinePAtLast
+			vector<Vec4i> lines;
+			HoughLinesP(imgIntentGroupLine, lines, 1, CV_PI / 180, pHoughLineTr, pHoughLineMinLineLen, pHoughLineMaxLineGap);
+
+			for (size_t i = 0; i < lines.size(); i++)
+			{
+				Vec4i l = lines[i];
+				line(imgLineDetec, Point(l[0], l[1]), Point(l[2], l[3]), CV_RGB(r, g, b), 1, CV_AA);
+			}
+			imshow("imgLineDetec", imgLineDetec);
+#endif
+
+
+		}
+
 
 	}
 
 	imshow("imgPolyGrouping", imgPolyGrouping);
 
-
-	// HoughLinesP on imgPolyResult
-	Mat imgLineDetec(imgCvtBin.size(), CV_8UC3);
-
-	vector<Vec4i> lines;
-	//HoughLinesP(imgPolyOf4, lines, 1, CV_PI / 180, 50, 50, 10);
-	HoughLinesP(imgPolyOf4, lines, 1, CV_PI / 180, pHoughLineTr, pHoughLineMinLineLen, pHoughLineMaxLineGap);
-
-	for (size_t i = 0; i < lines.size(); i++)
-	{
-		Vec4i l = lines[i];
-		line(imgLineDetec, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 255), 3, CV_AA);
-	}
-	imshow("imgLineDetec", imgLineDetec);
+	//imshow("imgIntentGroupLine", imgIntentGroupLine);
+		
 
 
 }
@@ -279,7 +302,9 @@ int main() {
 #if 1
 
 	//20160526_155743
-	imgSource = imread("D:\\WorkSpace\\WIN\\VS2013\\CSharp\\opencv_cube_recognize\\raw\\20160526_155743.jpg");
+	//20160526_155725
+	// bad 20160526_155723
+	imgSource = imread("D:\\WorkSpace\\WIN\\VS2013\\CSharp\\opencv_cube_recognize\\raw\\20160526_155725.jpg");
 
 	resize(imgSource, imgSource, Size(0, 0), 0.2, 0.2);
 	imshow("src img(resized)", imgSource);	
