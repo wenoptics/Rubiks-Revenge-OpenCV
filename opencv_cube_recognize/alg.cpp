@@ -41,6 +41,7 @@ vector<c_a_pair> makeContourAreaPair(vector<vector<Point> > contours) {
 }
 
 
+
 vector<vector<c_a_pair>> sortedGrouping_continous(vector<c_a_pair> list, double maxGap) {
 
 	vector<vector<c_a_pair>> groups;

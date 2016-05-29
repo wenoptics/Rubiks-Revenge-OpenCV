@@ -111,6 +111,27 @@ void do_back_perspective_transform(Mat imgToTransform, Mat& dst_image, Size fina
 
 }
 
+
+void getBackPerspectiveTransformMatrix(Matx33f& dst, Mat sourceMat) {
+	// 0,0  0,h  w,h  w,0
+	vector<Point2f> dst_transform
+		= {
+		Point2f(0, 0),
+		Point2f(0, sourceMat.rows),
+		Point2f(sourceMat.cols, sourceMat.rows),
+		Point2f(sourceMat.cols, 0)
+	};
+
+	vector<Point2f> vec_4points = VertexPersp;
+
+	if (vec_4points.size() == 0){
+		vec_4points = dst_transform;
+	}
+
+	Mat m = cv::getPerspectiveTransform(&dst_transform[0], &vec_4points[0]);
+	dst = m;
+}
+
 void get4x4PointsDetectionMat(Mat& dst) {
 
 	dst = Mat(cTransformedSize, cTransformedSize, CV_8U, Scalar(0, 0, 0));
@@ -121,6 +142,20 @@ void get4x4PointsDetectionMat(Mat& dst) {
 			int row = i * _full + _half;
 			int col = j * _full + _half;
 			dst.at<uchar>(row, col) = 255;
+		}
+	}
+}
+
+void get4x4PointsSet(vector<Point>& dst) {
+	dst = vector<Point>();
+
+	const int _full = cTransformedSize / 4;
+	const int _half = _full / 2;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			int row = i * _full + _half;
+			int col = j * _full + _half;
+			dst.push_back(Point(i, j));
 		}
 	}
 }
@@ -345,8 +380,48 @@ void showImg(){
 				// we good, we have all(i.e., 16) the test point on hit
 
 				Mat imgBackTransformed = Mat();
-				do_back_perspective_transform(imgPointsDetectionMat, imgBackTransformed, imgCvtBin.size());
+				//do_back_perspective_transform(imgPointsDetectionMat, imgBackTransformed, imgCvtBin.size());
+				//imshow("detectPointsBackTransformed", imgBackTransformed);
+				
+
+				imgBackTransformed = imgSource.clone();
+
+				// back transform the 4x4 detect point to the original image.
+				Matx33f backTransformedMat = Matx33f();
+				//get4x4PointsDetectionMat(imgPointsDetectionMat);
+				getBackPerspectiveTransformMatrix(backTransformedMat, imgPointsDetectionMat);
+
+				int tmpCounter = 0;
+				// TODO: use iterator here!
+				const int _full = cTransformedSize / 4;
+				const int _half = _full / 2;
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						int row = i * _full + _half;
+						int col = j * _full + _half;
+						Point2f p(row, col);
+						Point3f tP = backTransformedMat * p;
+
+						printf("(%d,%d) at (%.2f,%.2f)\n", row, col, tP.x, tP.y);
+
+						circle(imgBackTransformed, Point(tP.x, tP.y), 3, CV_RGB(255, 255, 255), -1);
+						putText(imgBackTransformed,
+							std::to_string(tmpCounter++),
+							Point(tP.x, tP.y),
+							FONT_HERSHEY_SCRIPT_SIMPLEX, 0.6, CV_RGB(255, 255, 255));
+
+					}
+				}
+
 				imshow("detectPointsBackTransformed", imgBackTransformed);
+
+
+
+				//now we extract the ROI
+				Mat imgROI = Mat();
+				do_perspective_transform(imgSource, imgROI);
+				imshow("imgROI", imgROI);
+				
 			}
 
 
@@ -394,7 +469,7 @@ int main() {
 	//20160526_155743
 	//20160526_155725
 	// bad 20160526_155723
-	imgSource = imread("D:\\WorkSpace\\WIN\\VS2013\\CSharp\\opencv_cube_recognize\\raw\\20160526_155725.jpg");
+	imgSource = imread("D:\\WorkSpace\\WIN\\VS2013\\CSharp\\opencv_cube_recognize\\raw\\20160526_155743.jpg");
 
 	resize(imgSource, imgSource, Size(0, 0), 0.2, 0.2);
 	imshow("src img(resized)", imgSource);	
