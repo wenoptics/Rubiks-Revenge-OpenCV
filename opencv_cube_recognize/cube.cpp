@@ -28,6 +28,8 @@ int pGaussianBlurSize = 1;
 
 int pSortedGroupingGap = 150;
 
+const int cTransformedSize = 80;
+
 void showImg();
 
 static void on_trackbar(int, void*) {
@@ -57,13 +59,71 @@ void init() {
 	createTrackbar("pCannyT2", "Control", &pCannyT2, 1000, on_trackbar);
 	
 	createTrackbar("pSortedGroupingGap", "Control", &pSortedGroupingGap, 1500, on_trackbar);
-	
+		
 	createTrackbar("pHoughLineTr", "Control", &pHoughLineTr, 200, on_trackbar);
 	createTrackbar("pHoughLineMinLineLen", "Control", &pHoughLineMinLineLen, 500, on_trackbar);
 	createTrackbar("pHoughLineMaxLineGap", "Control", &pHoughLineMaxLineGap, 100, on_trackbar);
 
 }
 
+
+vector<Point2f> VertexPersp;
+void do_perspective_transform(Mat src, Mat& dst) {
+	Mat matPTransform;
+
+	// 0,0  0,h  w,h  w,0
+	// w == 80 ; h == 80
+	int w = cTransformedSize;
+	int h = cTransformedSize;
+	vector<Point2f> dst_transform
+		= { Point2f(0, 0), Point2f(0, h), Point2f(w, h), Point2f(w, 0) };
+
+	Mat imgAfterPerspTrans;
+
+	matPTransform = cv::getPerspectiveTransform(&VertexPersp[0], &dst_transform[0]);
+
+	cv::warpPerspective(src, imgAfterPerspTrans, matPTransform, Size(w, h));
+	//imshow("AfterPerspTrans", imgAfterPerspTrans);
+
+	dst = imgAfterPerspTrans;
+}
+
+void do_back_perspective_transform(Mat imgToTransform, Mat& dst_image, Size finalSize) {
+	Mat matPTransform;
+
+	// 0,0  0,h  w,h  w,0
+	vector<Point2f> dst_transform
+		= {
+		Point2f(0, 0),
+		Point2f(0, imgToTransform.rows),
+		Point2f(imgToTransform.cols, imgToTransform.rows),
+		Point2f(imgToTransform.cols, 0)
+	};
+
+	vector<Point2f> vec_4points = VertexPersp;
+
+	if (vec_4points.size() == 0){
+		vec_4points = dst_transform;
+	}
+
+	matPTransform = cv::getPerspectiveTransform(&dst_transform[0], &vec_4points[0]);
+	cv::warpPerspective(imgToTransform, dst_image, matPTransform, finalSize);
+
+}
+
+void get4x4PointsDetectionMat(Mat& dst) {
+
+	dst = Mat(cTransformedSize, cTransformedSize, CV_8U, Scalar(0, 0, 0));
+	const int _full = cTransformedSize / 4;
+	const int _half = _full / 2;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			int row = i * _full + _half;
+			int col = j * _full + _half;
+			dst.at<uchar>(row, col) = 255;
+		}
+	}
+}
 
 
 vector<vector<Point> > contours;
@@ -259,6 +319,36 @@ void showImg(){
 
 		if (oneGroup.size() > 16 && areaRatio > 0.4) 
 		{
+
+			// transform the area to a rectangle
+			Mat imgRegionTransformed;
+			VertexPersp = vector<Point2f>();
+			VertexPersp.push_back(pointsRect[0]);
+			VertexPersp.push_back(pointsRect[1]);
+			VertexPersp.push_back(pointsRect[2]);
+			VertexPersp.push_back(pointsRect[3]);
+
+			do_perspective_transform(tmpBImage, imgRegionTransformed);
+
+			imshow("imgRegionTransformed", imgRegionTransformed);
+
+			// we construct a 4x4 detect points to see whether this group fits.
+			Mat imgPointsDetectionMat;
+			get4x4PointsDetectionMat(imgPointsDetectionMat);
+			//imshow("s", imgPointsDetectionMat );
+			bitwise_and(imgPointsDetectionMat, imgRegionTransformed, imgPointsDetectionMat);
+			int nPointsLast = countNonZero(imgPointsDetectionMat);
+			printf("nPointsLast=%d", nPointsLast);
+
+			if (nPointsLast == 16) {
+
+				// we good, we have all(i.e., 16) the test point on hit
+
+				Mat imgBackTransformed = Mat();
+				do_back_perspective_transform(imgPointsDetectionMat, imgBackTransformed, imgCvtBin.size());
+				imshow("detectPointsBackTransformed", imgBackTransformed);
+			}
+
 
 #ifdef useHoughLinePAtLast
 			vector<Vec4i> lines;
