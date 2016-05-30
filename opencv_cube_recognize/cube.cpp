@@ -4,23 +4,22 @@
 #include <stdio.h>
 #include "alg.h"
 
-#define useAdaptiveThresold
-#undef useAdaptiveThresold
+#define useAdaptiveThresold0
+#undef useAdaptiveThresold1
 #undef useHoughLinePAtLast
 
 using namespace cv;
 using namespace std;
 
-int iOE = 8;
-int iOD = 3;
-int iCE = 7;
-int iCD = 3;
+int iOE = 13; // 8;
+int iOD = 8; // 3;
+int iCE = 7; // 7;
+int iCD = 1; //3;
 
 int pCannyT1 = 24;
 int pCannyT2 = 146;
 
-int pAdaptThres_blockSize = 26;
-int pAdaptThres_C = 2;
+int pAdaptThres_blockSize = 151, pAdaptThres_C = 48;
 
 int pHoughLineTr = 80, pHoughLineMinLineLen=129, pHoughLineMaxLineGap=48;
 
@@ -40,7 +39,7 @@ void init() {
 	
 	namedWindow("Control", CV_WINDOW_NORMAL);
 
-#ifdef useAdaptiveThresold
+#ifdef useAdaptiveThresold0
 
 	createTrackbar("pAdaptThres_blockSize", "Control", &pAdaptThres_blockSize, 300, on_trackbar);
 	createTrackbar("pAdaptThres_C", "Control", &pAdaptThres_C, 500, on_trackbar);
@@ -170,7 +169,7 @@ void showImg(){
 	Mat imgGrad, imgCanny;
 	cvtColor(imgSource, imgGrad, CV_BGR2GRAY);
 
-#ifdef useAdaptiveThresold
+#ifdef useAdaptiveThresold0
 	Mat imgThresholded = imgGrad.clone();
 
 	cv::adaptiveThreshold(imgGrad, imgThresholded, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY,
@@ -197,6 +196,20 @@ void showImg(){
 	imshow("morphological", imgMorph);
 
 
+#ifdef useAdaptiveThresold1
+	Mat imgThresholded = imgMorph.clone();
+
+	cv::adaptiveThreshold(imgMorph, imgThresholded, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY,
+		pAdaptThres_blockSize * 2 + 1, pAdaptThres_C / 10);
+	cv::imshow("adative threshold", imgThresholded);
+
+	imgMorph = imgThresholded.clone();
+
+#else
+	//imgMorph = imgGrad.clone();
+#endif
+
+
 	Canny(imgMorph, imgCanny, pCannyT1, pCannyT2, 3);
 	imshow("Canny", imgCanny);
 
@@ -221,8 +234,8 @@ void showImg(){
 	imshow("contours", imgDrawContours);
 
 
-	Mat imgPolyResult(imgCvtBin.size(), imgSource.type());
-	Mat imgPolyOf4(imgCvtBin.size(), CV_8UC3);
+	Mat imgPolyResult(imgCvtBin.size(), imgSource.type(), cv::Scalar(0));
+	Mat imgPolyOf4(imgCvtBin.size(), CV_8UC3, cv::Scalar(0));
 
 	printf("we have contours.size()==%d \n", contours.size());
 
@@ -277,10 +290,10 @@ void showImg(){
 	
 
 	// HoughLinesP on imgPolyResult
-	Mat imgLineDetec(imgCvtBin.size(), CV_8UC3);
+	Mat imgLineDetec(imgCvtBin.size(), CV_8UC3, cv::Scalar(0));
 	
 
-	Mat imgPolyGrouping(imgCvtBin.size(), imgSource.type());
+	Mat imgPolyGrouping(imgCvtBin.size(), imgSource.type(), cv::Scalar(0));
 	for each (vector<c_a_pair> oneGroup in groupingGroups)
 	{
 		//if (oneGroup.size() < 16)
@@ -306,7 +319,7 @@ void showImg(){
 
 		// we use this tmpBImage to calc the total area of all pieces
 		//		(due to overlapping issues, cannot simply add sum)
-		Mat tmpBImage(imgCvtBin.size(), CV_8U, Scalar(0, 0, 0));
+		Mat tmpBImage(imgCvtBin.size(), CV_8U, Scalar(0));
 		for each (c_a_pair ele in oneGroup)
 		{
 
@@ -471,7 +484,8 @@ int main() {
 	// bad 20160526_155723
 	imgSource = imread("D:\\WorkSpace\\WIN\\VS2013\\CSharp\\opencv_cube_recognize\\raw\\20160526_155743.jpg");
 
-	resize(imgSource, imgSource, Size(0, 0), 0.2, 0.2);
+	//resize(imgSource, imgSource, Size(0, 0), 0.2, 0.2);
+	resizeToLong(imgSource, 250);
 	imshow("src img(resized)", imgSource);	
 
 	showImg();
@@ -485,8 +499,10 @@ int main() {
 	while (1) {
 		cap >> imgSource;
 
+		resizeToLong(imgSource, 200);
+
 		// print the image;
-		imshow("window", imgSource);
+		imshow("raw", imgSource);
 		showImg();
 
 		// delay 33ms

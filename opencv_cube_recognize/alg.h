@@ -18,3 +18,5 @@ void printGroups(vector<vector<c_a_pair>> groups);
 vector<c_a_pair> makeContourAreaPair(vector<vector<Point> > contours);
 vector<c_a_pair> sortPairedGroupByArea(vector<c_a_pair> pairedGroup);
 void printAreas(vector<c_a_pair> pairedGroup);
+
+void resizeToLong(Mat& img, int longLength);

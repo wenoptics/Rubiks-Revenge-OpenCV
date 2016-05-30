@@ -125,3 +125,46 @@ void printGroups(vector<vector<c_a_pair>> groups) {
 	}
 }
 
+// resize the image, longLength to a value, keep ratio
+void resizeToLong_v2(Mat& img, int longLength) {
+
+	Size oriSize = img.size();
+	Size dstSize;
+	double ratio;
+	if (oriSize.height > oriSize.width) {
+		// height is longer
+		ratio = (double)oriSize.width / oriSize.height;
+		dstSize = Size(longLength * ratio, longLength);
+	}
+	else{
+		// width is longer
+		ratio = (double)oriSize.height / oriSize.width;
+		dstSize = Size(longLength, longLength * ratio);
+	}
+
+	Mat ret = Mat(img.size(), img.type());
+	resize(img, ret, dstSize);
+	img = ret.clone();
+
+}
+
+// resize the image, longLength to a value, keep ratio
+void resizeToLong(Mat& img, int longLength) {
+	
+	Size oriSize = img.size();
+	double ratio;
+
+	if (oriSize.height > oriSize.width) {
+		// height is longer
+		ratio = (double)longLength / oriSize.height;
+	}
+	else{
+		// width is longer
+		ratio = (double)longLength / oriSize.width;
+	}
+
+	//Mat ret = Mat();
+	resize(img, img, Size(0, 0), ratio, ratio);
+	//img = ret.clone();
+
+}
