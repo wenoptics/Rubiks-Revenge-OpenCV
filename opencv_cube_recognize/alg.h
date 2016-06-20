@@ -7,6 +7,7 @@
 using namespace cv;
 using namespace std;
 
+#define sqr(x) x*x
 
 typedef pair<vector<Point>, double> c_a_pair;
 

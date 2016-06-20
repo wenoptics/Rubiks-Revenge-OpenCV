@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cube.cpp">
+    <ClCompile Include="alg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="alg.cpp">
+    <ClCompile Include="cube_rr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
