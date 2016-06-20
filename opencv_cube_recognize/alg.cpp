@@ -10,7 +10,7 @@ using namespace cv;
 using namespace std;
 
 
-bool cmp(const c_a_pair& a, c_a_pair& b) {
+bool cmp_sortPairedGroupByArea(const c_a_pair& a, c_a_pair& b) {
 	return a.second < b.second;
 }
 
@@ -23,7 +23,7 @@ void printAreas(vector<c_a_pair> pairedGroup) {
 }
 
 vector<c_a_pair> sortPairedGroupByArea(vector<c_a_pair> pairedGroup) {
-	sort(pairedGroup.begin(), pairedGroup.end(), cmp);
+	sort(pairedGroup.begin(), pairedGroup.end(), cmp_sortPairedGroupByArea);
 	return pairedGroup;
 }
 
@@ -167,4 +167,24 @@ void resizeToLong(Mat& img, int longLength) {
 	resize(img, img, Size(0, 0), ratio, ratio);
 	//img = ret.clone();
 
+}
+
+
+/// 
+
+
+
+bool cmp_sortPairedGroupByDistance(const dcpPair& a, dcpPair& b) {
+	return a.distance < b.distance;
+}
+
+vector<dcpPair> sortPairedGroupByDistance(vector<dcpPair> pairedGroup) {
+	sort(pairedGroup.begin(), pairedGroup.end(), cmp_sortPairedGroupByDistance);
+	return pairedGroup;
+}
+
+
+float euclideanDist(Point& p, Point& q) {
+	Point diff = p - q;
+	return cv::sqrt(diff.x*diff.x + diff.y*diff.y);
 }

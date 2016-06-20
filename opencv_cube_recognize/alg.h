@@ -20,3 +20,20 @@ vector<c_a_pair> sortPairedGroupByArea(vector<c_a_pair> pairedGroup);
 void printAreas(vector<c_a_pair> pairedGroup);
 
 void resizeToLong(Mat& img, int longLength);
+
+
+/// 
+
+typedef vector<Point> tPoly;
+
+//distance-centrePoint-polyArr pair
+typedef struct {
+	double distance;
+	Point centrePoint;
+	tPoly poly;
+} dcpPair;
+
+bool cmp_sortPairedGroupByDistance(const dcpPair& a, dcpPair& b);
+vector<dcpPair> sortPairedGroupByDistance(vector<dcpPair> pairedGroup);
+
+float euclideanDist(Point& p, Point& q);
