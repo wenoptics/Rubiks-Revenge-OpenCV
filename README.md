@@ -4,6 +4,13 @@ In associate with my [LEGO Rubik's Revenge Solver](https://github.com/wenoptics/
 
 The following description is abridged from my essay.
 
+<p align="center">
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=qqWS-qgw8oM
+" target="_blank"><img src="http://img.youtube.com/vi/qqWS-qgw8oM/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+<br>YouTube
+</p>
+
 ---
 
   此程序使用OpenCV 3.1.0 (C++), 在Visual Studio 2013上调试，应用了Canny边缘增强、distanceTransform(距离变换)和watershed alg(分水岭算法)等过程，下图的流程图简述了实现思路。
