@@ -1,6 +1,6 @@
-# OpenCV---Rubik-Revenge-4x4
+# Rubiks-Revenge-OpenCV
 
-In associate with my [LEGO Rubik's Revenge solver](https://github.com/wenoptics/Rubiks-Cube-Solver---LEGO)
+In associate with my [LEGO Rubik's Revenge Solver](https://github.com/wenoptics/Rubiks-Cube-Robot)
 
 The following description is abridged from my essay.
 
