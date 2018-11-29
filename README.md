@@ -26,7 +26,8 @@ This README need to be improved(I awared of that).
 <img src="doc/A-D-pr.png"/>
 </p>
 
-##Some screenshots:
+
+## Screenshots:
 
 <p align="center">
 <img src="screenShot/20160621-newAlg-particial-0.png"/>
